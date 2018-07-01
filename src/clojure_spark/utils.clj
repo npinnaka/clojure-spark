@@ -7,7 +7,6 @@
   (:gen-class))
 
 (defonce spark-context
-  "only spark context"
   (let [context (-> (conf/spark-conf)
                     (conf/master "local[*]")
                     (conf/app-name "clojure-spark")
@@ -16,7 +15,6 @@
     context))
 
 (defonce sql-context
-  "only SQL context"
   (sql/sql-context spark-context))
 
 (defn build-columns
