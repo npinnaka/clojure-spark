@@ -44,7 +44,6 @@
         _             (sql/register-temp-table data-frame table-name)
         out-df        (sql/sql util/sql-context query)]
     (data-frame->map out-df)
-    ()
     ))
 
 (defn process-input-json-file
