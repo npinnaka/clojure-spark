@@ -5,65 +5,64 @@
               [clojure-spark.utils :as util])
     (:import [org.apache.spark.sql.types DataTypes]
              [org.apache.spark.sql RowFactory
-              SaveMode])
+                                   SaveMode])
     (:gen-class))
 
-(def scehma-vec
-  [["product_name" DataTypes/StringType true]
-   ["manufacturer" DataTypes/StringType true]
-   ["quantity" DataTypes/LongType true]
-   ["price" (DataTypes/createDecimalType 11 2) true]])
+(def types-map
+  {java.lang.Boolean    DataTypes/BooleanType
+   java.lang.Integer    DataTypes/IntegerType
+   java.lang.Long       DataTypes/LongType
+   clojure.lang.BigInt  DataTypes/LongType
+   java.lang.String     DataTypes/StringType
+   java.lang.Double     DataTypes/DoubleType
+   java.math.BigDecimal (DataTypes/createDecimalType 11 2)
+   }) ;; nil tyopes is not need for non matching type we will see nil's only
 
-(def schema
-  (->
-   (map #(DataTypes/createStructField (first %) (second %) (nth % 2)) scehma-vec)
-   DataTypes/createStructType))
+(defn identify-valid-map-to-create-structure [vec-map]  ;; this function will fail if all maps has at least one nil value.
+  (let [first-map (first vec-map)]
+    (if (nil? first-map)
+      first-map
+      (if (.contains (map type (vals first-map)) nil)
+        (identify-valid-map-to-create-structure (rest vec-map))
+        first-map))))
 
-(defn prepare-json-file-using-custom-schema
-  "preapre a JSON file"
-  []
-  (let [in-rdd          (api/parallelize util/spark-context
-                                         [["iPhone" "Apple inc" 255 999.99M]
-                                          ["Note 8" "Samsung Electronics" 155 899.99M]
-                                          ["Oneplus 6" "Oneplus llc" 55 579.99M]])
+;;WIP write an optimal method for identifying data types.
+(defn identity-data-types [vec-map]
+    ;; use range for keys
+  ;; calls  (map type (vals first-map) and zpply zipmap
+  ;; update only nil record by iterating rest of vec map
+  ;; if all types identified then return from function.
+    )
 
-        out-rdd         (->
-                         in-rdd
-                         (api/map
-                          (api/fn [row-vec]
-                            (RowFactory/create (into-array Object row-vec)))))
+(defn create-structure
+  [vec-map]
+  (DataTypes/createStructType
+   (map
+    (fn map-field
+      [[k v]]
+      (DataTypes/createStructField (name k) (get types-map (type v)) true))
+    vec-map)))
 
-        data-frame      (.createDataFrame util/sql-context
-                                          out-rdd
-                                          schema)]
+(defn generate-parquet-file
+  [vec-map]
+  (let [sql-ctx (sql/sql-context util/spark-context)
+
+        rdd     (->
+                 (api/parallelize util/spark-context (->>
+                                                      vec-map
+                                                      (map vals)
+                                                      (map vec)
+                                                      (vec)))
+                 (api/map
+                  (api/fn [vec-row]
+                    (RowFactory/create (into-array Object vec-row)))))
+
+        df      (.createDataFrame sql-ctx rdd (create-structure
+                                               (identify-valid-map-to-create-structure vec-map)))]
+    (.show df)
     (->
-     data-frame
-     (.coalesce 1) ; write 1 partition
-     (.write) ; returns data -frame
-     (.mode SaveMode/Append) ;; APPEND TO FILE
-     (.json "resources/jsonfile"))))
-
-
-(defn prepare-parquet-file-using-custom-schema
-  "preapre a parquet file"
-  []
-  (let [in-rdd          (api/parallelize util/spark-context
-                                         [["iPhone" "Apple inc" 255 999.99M]
-                                          ["Note 8" "Samsung Electronics" 155 899.99M]
-                                          ["Oneplus 6" "Oneplus llc" 55 579.99M]])
-
-        out-rdd         (->
-                         in-rdd
-                         (api/map
-                          (api/fn [row-vec]
-                            (RowFactory/create (into-array Object row-vec)))))
-
-        data-frame      (.createDataFrame util/sql-context
-                                          out-rdd
-                                          schema)]
-    (->
-     data-frame
-     (.coalesce 1) ; write 1 partition
-     (.write) ; returns data -frame
-     (.mode SaveMode/Append) ;; APPEND TO FILE
-     (.parquet "resources/parquetfile"))))
+     df
+     (.coalesce 1)
+     (.write)
+     (.mode SaveMode/Overwrite)
+     (.parquet "resources/output/op.parquet"))))
