@@ -41,13 +41,13 @@
 (defn prepare-in-schema [template-name]
   (vec (map #(first %) template-name)))
 
-(prepare-in-schema input-template)
-(prepare-in-schema calculate-template)
-(prepare-in-schema output-template)
+(def auto-input-in-schema (prepare-in-schema input-template))
+(def auto-calculate-in-schema (prepare-in-schema calculate-template))
+(def auto-output-in-schema (prepare-in-schema output-template))
 
 (defn prepare-out-schema [template-name]
   (vec (map #(vector (first %) (second %)) template-name)))
 
-(prepare-out-schema input-out-template)
-(prepare-out-schema calculate-out-template)
-(prepare-out-schema output-out-template)
+(def auto-input-out-schema(prepare-out-schema input-out-template))
+(def auto-calculate-out-schema (prepare-out-schema calculate-out-template))
+(def auto-output-out-schema(prepare-out-schema output-out-template))
