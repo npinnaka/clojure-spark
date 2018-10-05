@@ -32,7 +32,6 @@
 (defn save-file-with-partition[df partition-columns file-name]
   (->
    df
-   (.coalesce 1)
    (.write)
    (.mode SaveMode/Append)
    (.partitionBy (util/str-arry partition-columns))
