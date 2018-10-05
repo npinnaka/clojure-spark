@@ -3,7 +3,8 @@
             [flambo.conf :as conf]
             [flambo.sql :as sql])
 
-  (:import [org.apache.spark.sql Column])
+  (:import [org.apache.spark.sql Column
+            SaveMode])
   (:gen-class))
 
 (defn build-spark-context[app-name]
@@ -34,5 +35,5 @@
    df
    (.write)
    (.mode SaveMode/Append)
-   (.partitionBy (util/str-arry partition-columns))
+   (.partitionBy (str-arry partition-columns))
    (.save file-name)))

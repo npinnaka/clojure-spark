@@ -71,3 +71,5 @@
                         {:date "20180401" :order_id 21}
                         {:date "20180501" :order_id 31}]))
 
+(util/save-file-with-partition out-df "date" "out/test.parquet")
+
