@@ -5,6 +5,7 @@
   (:gen-class))
 
 (defn -main [& args]
+  (util/build-spark-context "welcome")
     (p/pprint
      (qm/process-input-json-file
       "resources/input.json"

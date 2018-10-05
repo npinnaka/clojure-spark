@@ -6,16 +6,16 @@
   (:import [org.apache.spark.sql Column])
   (:gen-class))
 
-(defonce spark-context
-  (let [context (-> (conf/spark-conf)
-                    (conf/master "local[*]")
-                    (conf/app-name "clojure-spark")
-                    (api/spark-context))]
-    (.setLogLevel context "WARN")
-    context))
+(defn build-spark-context[app-name]
+  (defonce spark-context (api/spark-context (conf/spark-conf)))
+  (defonce sql-context
+    (sql/sql-context spark-context)))
 
-(defonce sql-context
-  (sql/sql-context spark-context))
+(defn build-spark-local-context [app-name]
+  (defonce spark-context (api/spark-context "local[*]" app-name))
+  (defonce sql-context
+    (sql/sql-context spark-context)))
+
 
 (defn build-columns
   "prepare a column array"
@@ -26,3 +26,14 @@
   "prepare a string array"
   [& mycols]
   (into-array mycols))
+
+(build-spark-local-context "new-name")
+
+(defn save-file-with-partition[df partition-columns file-name]
+  (->
+   df
+   (.coalesce 1)
+   (.write)
+   (.mode SaveMode/Append)
+   (.partitionBy (util/str-arry partition-columns))
+   (.save file-name)))
