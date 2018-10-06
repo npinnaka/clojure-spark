@@ -17,16 +17,10 @@
   (defonce sql-context
     (sql/sql-context spark-context)))
 
-
 (defn build-columns
   "prepare a column array"
   [& mycols]
   (into-array Column (map (fn [x] (Column. x)) mycols)))
-
-(defn str-arry
-  "prepare a string array"
-  [& mycols]
-  (into-array mycols))
 
 (build-spark-local-context "new-name")
 
@@ -35,5 +29,5 @@
    df
    (.write)
    (.mode SaveMode/Append)
-   (.partitionBy (str-arry partition-columns))
+   (.partitionBy (into-array partition-columns))
    (.save file-name)))
