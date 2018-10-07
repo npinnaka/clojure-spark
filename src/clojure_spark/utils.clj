@@ -29,5 +29,5 @@
    df
    (.write)
    (.mode SaveMode/Append)
-   (.partitionBy (into-array partition-columns))
+   ;(.partitionBy (into-array partition-columns))
    (.save file-name)))
