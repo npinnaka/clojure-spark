@@ -21,6 +21,8 @@
          api/collect)]
     (map #(create-map columns %) data)))
 
+
+
 (defn parquet-file-apply-query->data-frame
   "return a dataframe from parquet files using flambo sql"
   [file-name table-name query]

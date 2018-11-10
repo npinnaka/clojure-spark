@@ -44,32 +44,32 @@
       [[k v]]
       (DataTypes/createStructField (name k) (get types-map (type v)) true))
     vec-map)))
-
-(defn generate-parquet-file
-  [vec-map]
-  (let [sql-ctx (sql/sql-context util/spark-context)
-
-        rdd     (->
-                 (api/parallelize util/spark-context (->>
-                                                      vec-map
-                                                      (map vals)
-                                                      (map vec)
-                                                      (vec)))
-                 (api/map
-                  (api/fn [vec-row]
-                    (RowFactory/create (into-array Object vec-row)))))
-
-        df      (.createDataFrame sql-ctx
-                                  rdd
-                                  (create-structure
-                                   (identify-valid-map-to-create-structure vec-map)))]
-    df))
-
-(def out-df (generate-parquet-file [{:date "20180101" :order_id 1}
-                        {:date "20180201" :order_id 10}
-                        {:date "20180301" :order_id 11}
-                        {:date "20180401" :order_id 21}
-                        {:date "20180501" :order_id 31}]))
-
-(util/save-file-with-partition out-df "date" "out/test.parquet")
+;
+;(defn generate-parquet-file
+;  [vec-map]
+;  (let [sql-ctx (sql/sql-context util/spark-context)
+;
+;        rdd     (->
+;                 (api/parallelize util/spark-context (->>
+;                                                      vec-map
+;                                                      (map vals)
+;                                                      (map vec)
+;                                                      (vec)))
+;                 (api/map
+;                  (api/fn [vec-row]
+;                    (RowFactory/create (into-array Object vec-row)))))
+;
+;        df      (.createDataFrame sql-ctx
+;                                  rdd
+;                                  (create-structure
+;                                   (identify-valid-map-to-create-structure vec-map)))]
+;    df))
+;
+;(def out-df (generate-parquet-file [{:date "20180101" :order_id 1}
+;                        {:date "20180201" :order_id 10}
+;                        {:date "20180301" :order_id 11}
+;                        {:date "20180401" :order_id 21}
+;                        {:date "20180501" :order_id 31}]))
+;
+;(util/save-file-with-partition out-df "date" "out/test.parquet")
 
