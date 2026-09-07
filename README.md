@@ -1,39 +1,33 @@
-## Welcome to GitHub Pages
+## Clojure Spark
 
-You can use the [editor on GitHub](https://github.com/npinnaka/clojure-spark/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+A small Clojure project demonstrating Spark SQL and Flambo for processing JSON and Parquet data.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Requirements
 
-### Markdown
+- Java 8 or a compatible JDK for Spark 2.4.8
+- [Leiningen](https://leiningen.org/)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+The project uses Clojure 1.10.3, Flambo 0.8.2, and Apache Spark 2.4.8 with Scala 2.11.
 
-```markdown
-Syntax highlighted code block
+### Usage
 
-# Header 1
-## Header 2
-### Header 3
+Download dependencies and run the test suite with:
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```sh
+make deps
+make test
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+The application entry point is `clojure-spark.core`. It reads sample JSON and Parquet resources under `resources/` and prints aggregated results.
 
-### Jekyll Themes
+To run it directly with Leiningen:
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/npinnaka/clojure-spark/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```sh
+lein run
+```
 
-### Support or Contact
+Generated build artifacts can be removed with:
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```sh
+make clean
+```
