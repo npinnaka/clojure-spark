@@ -22,7 +22,10 @@
   [& mycols]
   (into-array Column (map (fn [x] (Column. x)) mycols)))
 
-(build-spark-local-context "new-name")
+(defn str-arry
+  "prepare a string array"
+  [& values]
+  (into-array String values))
 
 (defn save-file-with-partition[df partition-columns file-name]
   (->

@@ -1,7 +1,7 @@
-(ns clojure-flambo.core-test
+(ns clojure-spark.core-test
   (:require [clojure.test :refer :all]
-            [clojure-flambo.core :refer :all]))
+            [clojure-spark.utils :as utils]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest build-columns-test
+  (testing "build-columns does not require starting Spark"
+    (is (= 2 (count (utils/build-columns "supplier" "product_name"))))))

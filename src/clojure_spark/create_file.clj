@@ -65,11 +65,3 @@
                                    (identify-valid-map-to-create-structure vec-map)))]
     df))
 
-(def out-df (generate-parquet-file [{:date "20180101" :order_id 1}
-                        {:date "20180201" :order_id 10}
-                        {:date "20180301" :order_id 11}
-                        {:date "20180401" :order_id 21}
-                        {:date "20180501" :order_id 31}]))
-
-(util/save-file-with-partition out-df "date" "out/test.parquet")
-
